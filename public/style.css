@@ -1,0 +1,10 @@
+.products {
+  display: grid;
+}
+
+.product {
+  .title {
+    font-weight: bold;
+    font-size: 1.2rem;
+  }
+}
