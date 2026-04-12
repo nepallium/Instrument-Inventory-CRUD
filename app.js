@@ -1,15 +1,23 @@
 import express from "express";
 import "dotenv/config";
-import path from "node:path";
+import path from "path";
+import indexRouter from "./routes/indexRouter.js";
+import productsRouter from "./routes/productsRouter.js";
 
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => res.send("hello world"));
-
-app.set("views", path.join(__dirname, "views"));
+// ejs
+app.set("views", path.join(import.meta.dirname, "views"));
 app.set("view engine", "ejs");
+
+const assetsPath = path.join(import.meta.dirname, "public");
+app.use(express.static(assetsPath));
+
+// routes
+app.use("/", indexRouter);
+app.use("/products", productsRouter);
 
 // 404 handler
 app.use((req, res, next) => {
