@@ -3,6 +3,7 @@ import "dotenv/config";
 import path from "path";
 import indexRouter from "./routes/indexRouter.js";
 import productsRouter from "./routes/productsRouter.js";
+import categoriesRouter from "./routes/categoriesRouter.js";
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.static(assetsPath));
 // routes
 app.use("/", indexRouter);
 app.use("/products", productsRouter);
+app.use("/categories", categoriesRouter);
 
 // 404 handler
 app.use((req, res, next) => {
