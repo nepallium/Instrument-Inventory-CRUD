@@ -22,6 +22,31 @@ export async function deleteProduct(productId) {
     `, [productId])
 }
 
+export async function updateProduct(product) {
+  if (product.category_name) {
+    await pool.query(`
+        UPDATE instruments_categories ic
+        SET category_id = (SELECT id FROM categories WHERE id = $1)
+        WHERE $2 = ic.instrument_id
+      `, [product.category_name, product.id])
+  }
+  if (product.brand_name) {
+    await pool.query(`
+        UPDATE instruments i
+        SET brand_id = (SELECT id FROM brands WHERE id = $1)
+        WHERE i.id = $2
+      `, [product.brand_name, product.id])
+  }
+
+  if (product.instrument_name) {
+    await pool.query(`
+        UPDATE instruments i
+        SET instrument_name = $1
+        WHERE i.id = $2
+      `, [product.name, product.id])
+  }
+}
+
 export async function getAllCategories() {
   const { rows } = await pool.query(`SELECT * FROM categories`);
   return rows;
@@ -30,7 +55,8 @@ export async function getAllCategories() {
 export async function getProductsInCategory(category) {
   const {rows} = await pool.query(`
     SELECT i.id, i.name, b.brand_name
-    LEFT JOIN instrument_categories i_c ON i_c.instrument_id = i.id
+    FROM instruments i
+    LEFT JOIN instruments_categories i_c ON i_c.instrument_id = i.id
     LEFT JOIN categories c ON c.id = i_c.category_id
     LEFT JOIN brands b ON b.id = i.brand_id
     WHERE c.name = $1

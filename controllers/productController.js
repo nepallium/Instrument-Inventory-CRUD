@@ -17,3 +17,13 @@ export async function deleteProduct(req, res) {
     res.redirect("/")
   }
 }
+
+export async function updateProduct(req, res) {
+  try {
+    await db.updateProduct(req.params)
+  } catch (error) {
+    console.error("Error while updating product:", error)
+  } finally {
+    res.redirect("/")
+  }
+}
