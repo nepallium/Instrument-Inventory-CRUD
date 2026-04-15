@@ -2,77 +2,105 @@ import pool from "./pool.js";
 // for deletion, learn how to reverse delete query to test deleting whole categories
 // deleting category should not delete the instrument
 
-const joinAll = 
-    `FROM instruments i
-    LEFT JOIN instruments_categories i_c ON i_c.instrument_id = i.id
+const joinAll = `FROM instruments i
+    LEFT JOIN instrument_categories i_c ON i_c.instrument_id = i.id
     LEFT JOIN categories c ON c.id = i_c.category_id
-    LEFT JOIN brands b ON b.id = i.brand_id`
+    LEFT JOIN brands b ON b.id = i.brand_id`;
 
-const joinAndSelectAll = 
-    `
-    SELECT i.id, i.instrument_name, b.brand_name,
-    COALESCE(json_agg(c.category_name) FILTER (WHERE c.category_name IS NOT NULL), '[]') AS categories
-    ${joinAll}
-    `
+const joinAndSelectAll = {
+  select: `SELECT i.id, i.instrument_name, b.brand_name, i.brand_id,
+      COALESCE(json_agg(c.category_name) FILTER (WHERE c.category_name IS NOT NULL), '[]') AS categories,
+      COALESCE(json_agg(c.id) FILTER (WHERE c.id IS NOT NULL), '[]') AS category_ids
+      ${joinAll}`,
+  groupBy: `GROUP BY i.id, b.brand_name, i.brand_id`,
+};
 
 export async function getAllProducts() {
-  const { rows } = await pool.query(`
-    ${joinAndSelectAll}
-    GROUP BY i.id, b.brand_name
-    `);
+  const { rows } = await pool.query(
+    `${joinAndSelectAll.select}
+    ${joinAndSelectAll.groupBy}
+    `,
+  );
 
   return rows;
 }
 
 export async function getProductInfo(productId) {
-  const {rows} = await pool.query(`
-    ${joinAndSelectAll}
-    WHERE id = $1
-    GROUP BY i.id, b.brand_name
-    `, [productId])
+  const { rows } = await pool.query(
+    `${joinAndSelectAll.select}
+    WHERE i.id = $1
+    ${joinAndSelectAll.groupBy}
+    `,
+    [productId],
+  );
+  return rows;
 }
 
 export async function deleteProduct(productId) {
-  await pool.query(`
+  await pool.query(
+    `
       DELETE FROM instruments i WHERE i.id = $1;
-    `, [productId])
+    `,
+    [productId],
+  );
 }
 
-export async function updateProduct(product) {
-  if (product.category_name) {
-    await pool.query(`
-        UPDATE instruments_categories ic
-        SET category_id = (SELECT id FROM categories WHERE id = $1)
-        WHERE $2 = ic.instrument_id
-      `, [product.category_name, product.id])
+export async function updateProduct(formData) {
+  if (formData.category_id) {
+    await pool.query(
+      `
+        UPDATE instrument_categories ic
+        SET category_id = $1
+        WHERE ic.instrument_id = $2
+      `,
+      [formData.category_id, formData.id],
+    );
   }
-  if (product.brand_name) {
-    await pool.query(`
+  if (formData.brand_id) {
+    await pool.query(
+      `
         UPDATE instruments i
-        SET brand_id = (SELECT id FROM brands WHERE id = $1)
+        SET brand_id = $1
         WHERE i.id = $2
-      `, [product.brand_name, product.id])
+      `,
+      [formData.brand_id, formData.id],
+    );
   }
 
-  if (product.instrument_name) {
-    await pool.query(`
+  if (formData.instrument_name) {
+    await pool.query(
+      `
         UPDATE instruments i
         SET instrument_name = $1
         WHERE i.id = $2
-      `, [product.name, product.id])
+      `,
+      [formData.instrument_name, formData.id],
+    );
   }
 }
 
+// =========
+// CATEGORIES
 export async function getAllCategories() {
   const { rows } = await pool.query(`SELECT * FROM categories`);
   return rows;
 }
 
 export async function getProductsInCategory(category) {
-  const {rows} = await pool.query(`
-    ${joinAndSelectAll}
-    WHERE c.name = $1
-    GROUP BY i.id, b.brand_name
-    `, [category])
-    return rows
+  const { rows } = await pool.query(
+    `
+    ${joinAndSelectAll.select}
+    WHERE c.category_name = $1
+    ${joinAndSelectAll.groupBy}
+    `,
+    [category],
+  );
+  return rows;
+}
+
+// =======
+// BRANDS
+export async function getAllBrands() {
+  const { rows } = await pool.query(`SELECT * FROM brands`);
+  return rows;
 }

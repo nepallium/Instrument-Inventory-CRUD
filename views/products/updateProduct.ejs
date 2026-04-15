@@ -1,23 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= title%></title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title%></title>
 </head>
+
 <body>
-    <h1>Update product</h1>
-    <form action="/update/<%= id %>" method="POST">
-        <label for="instrument_name">Instrument name</label>
-        <input type="text" name="instrument_name" id="instrument_name">
-        <label for="brand_id">Brand</label>
-        <select name="brand_id" id="brand_id">
-            <% brands.forEach(brand => {%>
-                <option value="<%= brand.id %>">
-                    <%= brand.brand_name %>
-                </option>
-            <%}%>
-        </select>
-    </form>
+  <h1>Update product</h1>
+  <form action="/products/update/<%= product.id %>" method="POST">
+    <label for="instrument_name">Instrument name</label>
+    <input type="text" name="instrument_name" id="instrument_name" value="<%= product.instrument_name %>" required>
+    <label for="brand_id">Brand</label>
+    <select name="brand_id" id="brand_id" required>
+      <% brands.forEach(brand => {%>
+      <option value="<%= brand.id %>" <%= brand.id === product.brand_id ? 'selected' : '' %>>
+        <%= brand.brand_name %>
+      </option>
+      <%})%>
+    </select>
+    <label for="category_ids">Category</label>
+    <select name="category_ids" id="category_ids" required multiple>
+      <% categories.forEach(category => { %>
+      <option value="<%= category.id %>" <%= product.category_ids.includes(category.id) ? 'selected' : '' %>>
+        <%= category.category_name %>
+      </option>
+      <% }) %>
+    </select>
+    <button type="submit">Save</button>
+  </form>
 </body>
+
 </html>
