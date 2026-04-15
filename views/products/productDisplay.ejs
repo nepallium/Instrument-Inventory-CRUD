@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= title %></title>
+</head>
+<body>
+    <%- include("product", locals) %>
+    <div>
+        <button><a href="/products/edit/<%= id %>">Edit</a></button>
+        <button><a href="/products/delete/<%= id %>">Delete</a></button>
+    </div>
+</body>
+</html>
