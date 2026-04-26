@@ -12,5 +12,16 @@ export async function showSingleCategory(req, res) {
   res.render("categories/categoryPage", {
     title: category_name,
     products,
+    category_id: req.params.id,
   });
+}
+
+export async function addCategory(req, res) {
+  await db.addCategory(req.body);
+  res.redirect("/categories");
+}
+
+export async function deleteCategory(req, res) {
+  await db.deleteCategory(req.params.id);
+  res.redirect("/categories");
 }

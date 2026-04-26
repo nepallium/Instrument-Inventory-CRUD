@@ -134,6 +134,19 @@ export async function getCategoryNameFromId(categoryId) {
   return rows;
 }
 
+export async function addCategory(formData) {
+  await pool.query(
+    `INSERT INTO categories (category_name)
+      VALUES ($1)
+    `,
+    [formData.category_name],
+  );
+}
+
+export async function deleteCategory(categoryId) {
+  await pool.query(`DELETE FROM categories WHERE id = $1`, [categoryId]);
+}
+
 // =======
 // BRANDS
 export async function getAllBrands() {
