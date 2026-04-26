@@ -86,14 +86,30 @@ export async function getAllCategories() {
   return rows;
 }
 
-export async function getProductsInCategory(category) {
+export async function getProductsInCategory(categoryId) {
   const { rows } = await pool.query(
     `
     ${joinAndSelectAll.select}
-    WHERE c.category_name = $1
+    WHERE EXISTS (
+      SELECT 1
+      FROM instrument_categories ic
+      WHERE ic.instrument_id = i.id
+      AND ic.category_id = $1
+    )
     ${joinAndSelectAll.groupBy}
     `,
-    [category],
+    [categoryId],
+  );
+  return rows;
+}
+
+export async function getCategoryNameFromId(categoryId) {
+  const { rows } = await pool.query(
+    `SELECT category_name
+    FROM categories c
+    WHERE c.id = $1
+    `,
+    [categoryId],
   );
   return rows;
 }

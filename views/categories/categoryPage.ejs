@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+</head>
+
+<body>
+  <h1><%= title %></h1>
+  <div>
+    <% products.forEach(product => { %>
+    <div class="product">
+      <p class="title"><a href="/products/<%= product.id %>"><%= product.instrument_name %></a></p>
+      <p class="info">Brand: <a href="/brands/<%= product.brand_id %>"><%= product.brand_name %></a></p>
+    </div>
+    <% }) %>
+
+  </div>
+</body>
+
+</html>
