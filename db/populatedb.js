@@ -15,7 +15,7 @@ const createSQLTables = `
 
   CREATE TABLE IF NOT EXISTS instruments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    instrument_name TEXT NOT NULL,
+    instrument_name TEXT NOT NULL UNIQUE,
     brand_id UUID REFERENCES brands(id) ON DELETE SET NULL
     );
 
@@ -29,13 +29,16 @@ const createSQLTables = `
 const createBrands = `
   INSERT INTO brands (brand_name)
   VALUES
-  ('Yamaha'), ('Fender'), ('Gibson'), ('Roland');
+  ('Yamaha'), ('Fender'), ('Gibson'), ('Roland')
+  ON CONFLICT (brand_name) DO NOTHING;
+  ;
 `;
 
 const createCategories = `
   INSERT INTO categories (category_name)
   VALUES
   ('Reed'), ('Trumpet'), ('Saxophone'), ('Clarinet'), ('Piano'), ('Acoustic'), ('Electric'), ('Drums')
+  ON CONFLICT (category_name) DO NOTHING;
 `;
 
 const createInstruments = `
@@ -68,7 +71,9 @@ const createInstruments = `
   
   -- Drums
   ('Yamaha Stage Custom Birch 5-piece', (SELECT id FROM brands WHERE brand_name = 'Yamaha')),
-  ('Roland V-Drums TD-17KVX Electronic Kit', (SELECT id FROM brands WHERE brand_name = 'Roland'));
+  ('Roland V-Drums TD-17KVX Electronic Kit', (SELECT id FROM brands WHERE brand_name = 'Roland'))
+
+  ON CONFLICT (instrument_name) DO NOTHING;
 `;
 
 const linkInstrumentCategories = `
@@ -122,7 +127,9 @@ const linkInstrumentCategories = `
   ((SELECT id FROM instruments WHERE instrument_name = 'Yamaha Stage Custom Birch 5-piece'), (SELECT id FROM categories WHERE category_name = 'Acoustic')),
   
   ((SELECT id FROM instruments WHERE instrument_name = 'Roland V-Drums TD-17KVX Electronic Kit'), (SELECT id FROM categories WHERE category_name = 'Drums')),
-  ((SELECT id FROM instruments WHERE instrument_name = 'Roland V-Drums TD-17KVX Electronic Kit'), (SELECT id FROM categories WHERE category_name = 'Electric'));
+  ((SELECT id FROM instruments WHERE instrument_name = 'Roland V-Drums TD-17KVX Electronic Kit'), (SELECT id FROM categories WHERE category_name = 'Electric'))
+
+  ON CONFLICT (instrument_id, category_id) DO NOTHING;
 `;
 
 async function main() {
