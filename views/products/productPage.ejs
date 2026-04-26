@@ -9,7 +9,9 @@
   <p class="info">Brand: <a href="/brands/<%= brand_id %>"><%= brand_name %></a></p>
 
   <div>
-    <button>Edit</button>
-    <button>Delete</button>
+    <a href="/products/update/<%= id %>"><button>Edit</button></a>
+    <form action="/<%= id %>" method="POST" style="display:inline;">
+      <button onclick="return confirm('Are you sure you want to delete instrument?');">Delete</button>
+    </form>
   </div>
 </div>
