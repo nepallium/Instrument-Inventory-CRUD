@@ -31,7 +31,6 @@ const createBrands = `
   VALUES
   ('Yamaha'), ('Fender'), ('Gibson'), ('Roland')
   ON CONFLICT (brand_name) DO NOTHING;
-  ;
 `;
 
 const createCategories = `

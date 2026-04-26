@@ -46,15 +46,35 @@ export async function deleteProduct(productId) {
 }
 
 export async function updateProduct(formData) {
-  if (formData.category_id) {
-    await pool.query(
-      `
-        UPDATE instrument_categories ic
-        SET category_id = $1
-        WHERE ic.instrument_id = $2
-      `,
-      [formData.category_id, formData.id],
-    );
+  console.log(formData);
+  if (formData.category_ids) {
+    try {
+      await pool.query("BEGIN");
+
+      // rm all existing category associations for this instrument
+      await pool.query(
+        `DELETE FROM instrument_categories WHERE instrument_id = $1`,
+        [formData.instrument_id],
+      );
+
+      // insert new assocations to i_c
+      for (const catId of formData.category_ids) {
+        await pool.query(
+          `INSERT INTO instrument_categories (instrument_id, category_id)
+            VALUES ($1, $2)
+          `,
+          [formData.instrument_id, catId],
+        );
+      }
+
+      await pool.query("COMMIT");
+    } catch (error) {
+      await pool.query("ROLLBACK");
+      console.error(
+        "error occured while updating instrument-categories table:",
+        error,
+      );
+    }
   }
   if (formData.brand_id) {
     await pool.query(

@@ -10,7 +10,7 @@ export async function showAllProducts(req, res) {
 
 export async function showSingleProduct(req, res) {
   const [product] = await db.getProductInfo(req.params.id);
-  console.log(product);
+  // console.log(product);
 
   res.render("products/productPage", {
     title: product.instrument_name,
@@ -43,13 +43,13 @@ export async function deleteProduct(req, res) {
   } catch (error) {
     console.error("Error while deleting product:", error);
   } finally {
-    res.redirect("/");
+    res.redirect("/products");
   }
 }
 
 export async function updateProduct(req, res) {
   try {
-    await db.updateProduct(req.params);
+    await db.updateProduct(req.body);
   } catch (error) {
     console.error("Error while updating product:", error);
   } finally {
