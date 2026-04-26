@@ -3,9 +3,19 @@ import * as db from "../db/queries.js";
 export async function showAllProducts(req, res) {
   const products = await db.getAllProducts();
   // console.log("all products after join: " + products);
-  console.log("first product:", products[0]);
+  // console.log("first product:", products[0]);
 
   res.render("products/products", { title: "Products", products });
+}
+
+export async function showSingleProduct(req, res) {
+  const [product] = await db.getProductInfo(req.params.id);
+  console.log(product);
+
+  res.render("products/productPage", {
+    title: product.instrument_name,
+    ...product,
+  });
 }
 
 export async function showUpdateProduct(req, res) {
@@ -43,6 +53,6 @@ export async function updateProduct(req, res) {
   } catch (error) {
     console.error("Error while updating product:", error);
   } finally {
-    res.redirect("/");
+    res.redirect("/products");
   }
 }

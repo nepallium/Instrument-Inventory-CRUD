@@ -1,5 +1,5 @@
 <div class="product">
-  <p class="title"><a href="/products/<%= id %>"><%= instrument_name %></a></p>
+  <p class="title"><%= instrument_name %></a></p>
   <p class="info">
     Category:
     <% categories.forEach((cat, idx) => { %>
@@ -7,4 +7,9 @@
     <% }) %>
   </p>
   <p class="info">Brand: <a href="/brands/<%= brand_id %>"><%= brand_name %></a></p>
+
+  <div>
+    <button>Edit</button>
+    <button>Delete</button>
+  </div>
 </div>
