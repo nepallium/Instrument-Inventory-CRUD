@@ -11,7 +11,9 @@
   <h1>Categories</h1>
   <main>
     <% categories.forEach(category => { %>
-    <div><%= category.category_name %></div>
+    <a href="/categories/<%= category.id %>">
+      <div><%= category.category_name %></div>
+    </a>
     <% }) %>
   </main>
 </body>
